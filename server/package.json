@@ -1,0 +1,22 @@
+{
+  "name": "proyectomern",
+  "version": "1.0.0",
+  "description": "Proyecto mern stack",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon --exec babel-node src/index.js"
+  },
+  "author": "Maximo Carrion (https://github.com/mx7dev)",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/cli": "^7.14.8",
+    "@babel/preset-env": "^7.15.0",
+    "@babel/register": "^7.15.3",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.15.0",
+    "@babel/node": "^7.14.9",
+    "nodemon": "^2.0.12"
+  }
+}
