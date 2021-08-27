@@ -1,18 +1,31 @@
+import 'dotenv/config';
 import express from "express";
 import https from 'https';
 import { resolve, join } from 'path';
+import passport from 'passport';
 import { readFileSync } from 'fs';
+import mongoose from 'mongoose';
+
+import routes from './routes';
+import dbConnection from './database/config';
 
 const app = express();
 
+// Bodyparser Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(passport.initialize());
+
 const isProduction = process.env.NODE_ENV === "production";
 
+// DB Config
+const dbConnectionString = isProduction ? process.env.MONGO_URI_PROD : process.env.MONGO_URI_DEV;
 
-app.get('/', function (req, res) {
-  res.send('Saludos desde express');
-});
+dbConnection( dbConnectionString);
 
-
+// Use Routes
+app.use('/', routes);
 
 // Serve static assets if in production
 if (isProduction) {
