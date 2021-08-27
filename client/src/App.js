@@ -1,25 +1,61 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import Cookies from 'js-cookie';
+import { Route, Switch } from "react-router-dom";
+import Loader from "./components/Loader/Loader";
+import { compose } from "redux";
+import { connect } from "react-redux";
+import Home from './pages/Home/Home';
+import NotFound from './pages/NotFound/NotFound';
+import { logInUserWithOauth, loadMe } from './store/actions/authActions';
 
-function App() {
+
+
+
+
+const App = ({ logInUserWithOauth, auth, loadMe }) => {
+  useEffect(() => {
+    loadMe();
+  }, [loadMe]);
+
+  //redosled hookova
+  useEffect(() => {
+    if (window.location.hash === '#_=_') window.location.hash = '';
+
+    const cookieJwt = Cookies.get('x-auth-cookie');
+    if (cookieJwt) {
+      Cookies.remove('x-auth-cookie');
+      logInUserWithOauth(cookieJwt);
+    }
+  }, [logInUserWithOauth]);
+
+  useEffect(() => {
+    if (!auth.appLoaded && !auth.isLoading && auth.token && !auth.isAuthenticated) {
+      loadMe();
+    }
+  }, [auth.isAuthenticated, auth.token, loadMe, auth.isLoading, auth.appLoaded]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      {auth.appLoaded ? (
+        <Switch>
+          {/* <Route path="/login" component={Login} />
+          <Route path="/register" component={Register} />
+          <Route path="/users" component={Users} />
+          <Route path="/notfound" component={NotFound} />
+          <Route path="/admin" component={Admin} />
+          <Route exact path="/:username" component={Profile} /> */}
+          <Route exact path="/" component={Home} />
+          <Route component={NotFound} />
+        </Switch>
+      ) : (
+        <Loader />
+      )}
+    </>
   );
-}
+};
 
-export default App;
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+export default compose(connect(mapStateToProps, { logInUserWithOauth, loadMe }))(App);
